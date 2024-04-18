@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ZenWord</string>
+    <string name="letter_placeholder">A</string>
 </resources>
