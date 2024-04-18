@@ -31,14 +31,16 @@
         app:layout_constraintGuide_end="20dp" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/letterCircle"
         android:layout_width="238dp"
         android:layout_height="251dp"
+        android:importantForAccessibility="no"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/circle" />
+        app:srcCompat="@drawable/circle"
+        tools:ignore="ImageContrastCheck" />
 
     <Button
         android:id="@+id/letterButton1"
@@ -49,9 +51,10 @@
         android:textColor="#FFFFFF"
         android:textSize="34sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintEnd_toEndOf="@+id/letterCircle"
+        app:layout_constraintStart_toStartOf="@+id/letterCircle"
+        app:layout_constraintTop_toTopOf="@+id/letterCircle"
+        tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/letterButton2"
@@ -65,8 +68,9 @@
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintEnd_toEndOf="@+id/letterCircle"
+        app:layout_constraintTop_toTopOf="@+id/letterCircle"
+        tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/letterButton3"
@@ -78,8 +82,9 @@
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/imageView" />
+        app:layout_constraintEnd_toEndOf="@+id/letterCircle"
+        app:layout_constraintStart_toStartOf="@+id/letterCircle"
+        tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/letterButton4"
@@ -93,8 +98,9 @@
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="@+id/letterCircle"
+        app:layout_constraintTop_toTopOf="@+id/letterCircle"
+        tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
     <Button
         android:id="@+id/letterButton5"
@@ -107,9 +113,10 @@
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintEnd_toEndOf="@+id/letterCircle"
+        app:layout_constraintStart_toStartOf="@+id/letterCircle"
+        app:layout_constraintTop_toTopOf="@+id/letterCircle"
+        tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/letterButton6"
@@ -123,7 +130,7 @@
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="@+id/letterCircle" />
 
     <Button
         android:id="@+id/letterButton7"
@@ -136,8 +143,9 @@
         android:textColor="#FFFFFF"
         android:textSize="34sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintEnd_toEndOf="@+id/imageView" />
+        app:layout_constraintBottom_toBottomOf="@+id/letterCircle"
+        app:layout_constraintEnd_toEndOf="@+id/letterCircle"
+        tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/bonusButton"
@@ -180,4 +188,57 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         tools:ignore="SpeakableTextPresentCheck" />
+
+    <TextView
+        android:id="@+id/possibleWords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/possible_placeholder"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/clearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#00FFFFFF"
+        android:text="@string/clear"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline3" />
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#00FFFFFF"
+        android:text="@string/send"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4" />
+
+    <TextView
+        android:id="@+id/currentWord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/word_placeholder"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toStartOf="@+id/sendButton"
+        app:layout_constraintStart_toEndOf="@+id/clearButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>
