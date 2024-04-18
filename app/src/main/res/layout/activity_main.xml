@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    android:background="@drawable/wallpaper"
+    android:backgroundTint="#99646464"
+    android:backgroundTintMode="multiply"
+    tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
