@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wallpaper"
@@ -10,25 +11,25 @@
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
+        android:id="@+id/buttonsGuideLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_end="300dp" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
+        android:id="@+id/leftMargin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+        app:layout_constraintGuide_begin="50px" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
+        android:id="@+id/rightMargin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_end="20dp" />
+        app:layout_constraintGuide_end="50px" />
 
     <ImageView
         android:id="@+id/letterCircle"
@@ -155,7 +156,7 @@
         android:background="@drawable/bonus"
         android:backgroundTint="#A471FF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/leftMargin"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
@@ -164,8 +165,8 @@
         android:layout_height="70dp"
         android:background="@drawable/random"
         android:backgroundTint="#A471FF"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/leftMargin"
+        app:layout_constraintTop_toTopOf="@+id/buttonsGuideLine"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
@@ -174,8 +175,8 @@
         android:layout_height="70dp"
         android:background="@drawable/help"
         android:backgroundTint="#A471FF"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toStartOf="@+id/rightMargin"
+        app:layout_constraintTop_toTopOf="@+id/buttonsGuideLine"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
@@ -186,7 +187,7 @@
         android:background="@drawable/restart"
         android:backgroundTint="#A471FF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintEnd_toStartOf="@+id/rightMargin"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
@@ -196,9 +197,9 @@
         android:layout_marginTop="10dp"
         android:text="@string/possible_placeholder"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintEnd_toStartOf="@+id/rightMargin"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/leftMargin"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -212,8 +213,8 @@
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="@+id/guideline3" />
+        app:layout_constraintBottom_toTopOf="@+id/buttonsGuideLine"
+        app:layout_constraintStart_toStartOf="@+id/leftMargin" />
 
     <Button
         android:id="@+id/sendButton"
@@ -226,8 +227,8 @@
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4" />
+        app:layout_constraintBottom_toTopOf="@+id/buttonsGuideLine"
+        app:layout_constraintEnd_toStartOf="@+id/rightMargin" />
 
     <TextView
         android:id="@+id/currentWord"
@@ -238,7 +239,22 @@
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintBottom_toTopOf="@+id/buttonsGuideLine"
         app:layout_constraintEnd_toStartOf="@+id/sendButton"
         app:layout_constraintStart_toEndOf="@+id/clearButton" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/lettersTopGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="60dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/lettersBottomGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="340dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
