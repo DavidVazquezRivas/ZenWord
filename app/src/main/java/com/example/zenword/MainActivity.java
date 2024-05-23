@@ -13,10 +13,12 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         private final int wordLength;
         private final TextView[][] textViews;
         private final Context context;
+        private final int bgColor;
         private int usableWidth;
         private int letterSize;
 
@@ -73,6 +76,23 @@ public class MainActivity extends AppCompatActivity {
             textViews = new TextView[MAX_WORDS][wordLength];
 
             calculateSizes();
+
+            // Randomize color (not light colors)
+            Random random = new Random();
+            int red = random.nextInt(150);
+            int green = random.nextInt(150);
+            int blue = random.nextInt(150);
+            bgColor = Color.rgb(red, green, blue);
+
+            // Set circle color
+            ImageView imageView = findViewById(R.id.letterCircle);
+            Drawable backgroundDrawable = imageView.getBackground();
+
+            if (backgroundDrawable instanceof GradientDrawable) {
+                int[] colors = {bgColor, Color.rgb(0, 0, 0)};
+                ((GradientDrawable) backgroundDrawable).setColors(colors);
+                imageView.setBackground(backgroundDrawable);
+            }
 
             // Create letter rows
             int letters = 3;
@@ -103,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
         private TextView[] createTextViewsRow(int guide, int letters) {
             // Define TextView's colors
-            int bgColor = Color.rgb(30, 50, 150);
             int fgColor = Color.rgb(255, 255, 255);
 
             // Calculate margin size
