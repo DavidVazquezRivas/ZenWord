@@ -5,11 +5,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,15 +28,18 @@ public class MainActivity extends AppCompatActivity {
     private int usableWidth;
     private int wordLength = 6;
     private int letterSize;
+    TextView[][] textViews = new TextView[MAX_WORDS][wordLength];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createInterface();
+        showWord("Api", 0);
+        showFirstLetter("Api", 1);
     }
 
-    private void createInterface () {
+    private void createInterface() {
         // Get display size
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -54,16 +59,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Create letter rows
-        TextView[] prevRow = {};
         int letters = 3;
         for (int i = 0; i < MAX_WORDS; i++) {
-            int prevId = i == 0 ? R.id.lettersTopGuide : prevRow[0].getId();
-            prevRow = createTextViewsRow(prevId, letters);
+            int prevId = i == 0 ? R.id.lettersTopGuide : textViews[i - 1][0].getId();
+            textViews[i] = createTextViewsRow(prevId, letters);
             if (wordLength - letters == MAX_WORDS - (i + 1)) letters++;
         }
     }
 
-    public TextView[] createTextViewsRow(int guide, int letters) {
+    private TextView[] createTextViewsRow(int guide, int letters) {
         // Define TextView's colors
         int bgColor = Color.rgb(30, 50, 150);
         int fgColor = Color.rgb(255, 255, 255);
@@ -85,8 +89,11 @@ public class MainActivity extends AppCompatActivity {
             row[i] = new TextView(this);
             row[i].setId(ids[i]);
             row[i].setText("");
+            row[i].setTextSize(35);
             row[i].setBackground(createRoundedBackground(bgColor, 20));
             row[i].setTextColor(fgColor);
+            row[i].setGravity(Gravity.CENTER);
+            row[i].setTypeface(row[i].getTypeface(), Typeface.BOLD);
 
 
             layout.addView(row[i]);
@@ -127,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
         return drawable;
     }
 
-    public boolean isSolutionWord(String word1, String word2) {
+    // AUXILIARY FUNCTIONS
+    private boolean isSolutionWord(String word1, String word2) {
         // TODO use our own map
         HashMap<Character, Integer> catalogue = new HashMap<>();
 
@@ -149,5 +157,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void showWord(String s, int position) {
+        final String ERROR_MSG = "The word doesn't fit in the position";
+        if (position >= MAX_WORDS || position < 0) {
+            throw new ArrayIndexOutOfBoundsException(ERROR_MSG);
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            TextView letterView = textViews[position][i];
+            if (letterView == null) {
+                throw new NullPointerException(ERROR_MSG);
+            }
+            letterView.setText(String.valueOf(s.charAt(i)).toUpperCase());
+        }
+    }
+
+    private void showFirstLetter(String s, int position) {
+        final String ERROR_MSG = "Incorrect position";
+        if (position >= MAX_WORDS || position < 0) {
+            throw new ArrayIndexOutOfBoundsException(ERROR_MSG);
+        }
+
+        TextView letterView = textViews[position][0];
+        letterView.setText(String.valueOf(s.charAt(0)).toLowerCase());
     }
 }
