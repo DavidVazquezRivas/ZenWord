@@ -4,9 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         createInterface();
         showWord("Api", 0);
         showFirstLetter("Api", 1);
+        showMessage("Hello message", true);
     }
 
     private void createInterface() {
@@ -182,5 +184,12 @@ public class MainActivity extends AppCompatActivity {
 
         TextView letterView = textViews[position][0];
         letterView.setText(String.valueOf(s.charAt(0)).toLowerCase());
+    }
+
+    private void showMessage(String s, boolean large) {
+        Context context = getApplicationContext();
+        int duration = large ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, s, duration);
+        toast.show();
     }
 }
