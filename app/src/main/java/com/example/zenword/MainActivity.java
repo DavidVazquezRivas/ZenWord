@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         Interface i = new Interface(getApplicationContext(), 6);
         i.showWord("wrd", 0);
         i.showMessage("Hello message", true);
+        disableViews(R.id.layout);
     }
 
     private boolean isSolutionWord(String word1, String word2) {
@@ -55,6 +57,29 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void enableViews(int parent) {
+        ViewGroup parentView = findViewById(parent);
+        int children = parentView.getChildCount();
+        for (int i = 0; i < children; i++) {
+            View child = parentView.getChildAt(i);
+            if (child.getId() != R.id.bonusButton && child.getId() != R.id.clearButton) {
+                child.setEnabled(true);
+            }
+        }
+    }
+
+    private void disableViews(int parent) {
+        ViewGroup parentView = findViewById(parent);
+        int children = parentView.getChildCount();
+        System.out.println(children);
+        for (int i = 0; i < children; i++) {
+            View child = parentView.getChildAt(i);
+            if (child.getId() != R.id.bonusButton && child.getId() != R.id.restartButton) {
+                child.setEnabled(false);
+            }
+        }
     }
 
     private class Interface {
