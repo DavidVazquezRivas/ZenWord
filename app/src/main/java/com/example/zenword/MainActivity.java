@@ -23,16 +23,27 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private Interface i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Interface i = new Interface(getApplicationContext(), 6);
+
+        // Tests
+        startGame();
         i.showWord("wrd", 0);
         i.showMessage("Hello message", true);
-        disableViews(R.id.layout);
+    }
+
+    public void restartGame(View v) {
+        i.deleteViews();
+        startGame();
+    }
+
+    private void startGame() {
+        Random random = new Random();
+        i = new Interface(getApplicationContext(), random.nextInt(3) + 5);
     }
 
     private boolean isSolutionWord(String word1, String word2) {
@@ -98,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             this.context = context;
             this.wordLength = wordLength;
 
-            textViews = new TextView[MAX_WORDS][wordLength];
+            textViews = new TextView[MAX_WORDS][];
 
             calculateSizes();
 
@@ -241,6 +252,18 @@ public class MainActivity extends AppCompatActivity {
             int duration = large ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, s, duration);
             toast.show();
+        }
+
+        public void deleteViews() {
+            ConstraintLayout layout = findViewById(R.id.layout);
+
+            for (int i = 0; i < MAX_WORDS; i++) {
+                for (TextView textView : textViews[i]) {
+                    if (textView != null) {
+                        layout.removeView(textView);
+                    }
+                }
+            }
         }
     }
 }
