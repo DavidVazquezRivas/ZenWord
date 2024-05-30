@@ -163,6 +163,7 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/bonus"
         android:backgroundTint="#A471FF"
+        android:onClick="bonus"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/leftMargin"
         tools:ignore="SpeakableTextPresentCheck" />

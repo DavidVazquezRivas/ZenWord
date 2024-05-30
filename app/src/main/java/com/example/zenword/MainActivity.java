@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
     * o no la paraula */
     private TreeMap<String, Boolean> found;
     private int nFound;
-
-    private int ajudes;
     private int bonus;
 
     @Override
@@ -128,13 +126,9 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 found.put(valids.get(input), false);
                 nFound++;
+                bonus++;
                 i.updateFound();
                 i.showMessage("Paraula valida! Tens un bonus", false);
-                bonus++;
-                if (bonus == 5) {
-                    bonus = 0;
-                    ajudes++;
-                }
             }
         } else {
             i.showMessage("Paraula no vàlida", true);
@@ -156,13 +150,28 @@ public class MainActivity extends AppCompatActivity {
         wordView.setText("");
     }
 
+    public void bonus(View v) {
+        if (bonus < 5) {
+            i.showMessage("No tens bonus suficients", false);
+        } else {
+            bonus -= 5;
+            Iterator<Map.Entry<String, Integer>> it = hidden.entrySet().iterator();
+
+            Map.Entry<String, Integer> entry = it.next();
+            String s = entry.getKey();
+            Integer pos = entry.getValue();
+            i.showFirstLetter(s, pos);
+        }
+
+        i.updateFound();
+    }
+
     private void startGame() {
         Random random = new Random();
         wordLength = random.nextInt(3) + 5;
         nValids = 0;
         nFound = 0;
         bonus = 0;
-        ajudes = 0;
         TextView word = findViewById(R.id.currentWord);
         word.setText("");
         selectWords();
@@ -365,7 +374,14 @@ public class MainActivity extends AppCompatActivity {
 
             // Show amount of possible words
             TextView possibleWords = findViewById(R.id.possibleWords);
-            possibleWords.setText("Has encertat 0 de " + nValids);
+            possibleWords.setText("Has encertat " + nFound + " de " + nValids);
+
+            // Show bonus
+            Button bonusButton = findViewById(R.id.bonusButton);
+            bonusButton.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+            bonusButton.setTextSize(20);
+            bonusButton.setTypeface(bonusButton.getTypeface(), Typeface.BOLD);
+            bonusButton.setText(String.valueOf(bonus));
         }
 
         private void calculateSizes() {
@@ -498,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
         public void updateFound() {
             TextView possibleWords = findViewById(R.id.possibleWords);
             SpannableStringBuilder foundString = new SpannableStringBuilder();
-
+            // Concat words
             for (Map.Entry<String, Boolean> entry : found.entrySet()) {
                 String word = entry.getKey();
 
@@ -512,14 +528,17 @@ public class MainActivity extends AppCompatActivity {
 
                 foundString.append(", ");
             }
-
+            // Delete final ", "
             if (foundString.length() > 2) {
                 foundString.delete(foundString.length() - 2, foundString.length());
             }
 
-            // Establecer el texto en el TextView
             possibleWords.setText("Has encertat " + nFound + " de " + nValids + ": ");
             possibleWords.append(foundString);
+
+            // Update bonus button
+            Button bonusButton = findViewById(R.id.bonusButton);
+            bonusButton.setText(String.valueOf(bonus));
         }
     }
 }
