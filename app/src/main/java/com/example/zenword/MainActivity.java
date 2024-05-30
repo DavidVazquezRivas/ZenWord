@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (hidden.isEmpty()) {
             i.showMessage("Enhorabona, has guanyat", true);
+            bonus(null);
             disableViews(R.id.layout);
         } else {
             enableViews(R.id.layout);
@@ -367,11 +368,17 @@ public class MainActivity extends AppCompatActivity {
 
                         letterButtons[i].setText(String.valueOf(letter).toUpperCase());
 
-                        if (frequency > 1) {
-                            leters.put(letter, frequency - 1);
-                        } else {
-                            it.remove();
+                        while (frequency > 1) {
+                            i++;
+                            leters.put(letter, --frequency);
+                            buttonID = "letterButton" + (i + 1);
+                            resID = getResources().getIdentifier(buttonID, "id", getPackageName());
+                            letterButtons[i] = findViewById(resID);
+                            letterButtons[i].setText(String.valueOf(letter).toUpperCase());
                         }
+
+                        it.remove();
+
                     } else {
                         letterButtons[i].setText("");
                     }
