@@ -37,8 +37,10 @@ public class MainActivity extends AppCompatActivity {
     /* S'empren un hashmap i un hashset perquè no hi ha necessitat de fer una recuperació ordenada
     * que es el gran problema d'aquests i les complexitats algoritmitques d'aquest son els més òptims*/
     private HashMap<Integer, HashSet<Word>> lengths;
+    private final int[] wordsAmmount = new int[MAX_LENGTH - MIN_LENGTH + 1];
     /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada*/
     private TreeSet<Word> valids;
+    private int nValids = 0;
 
     /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada a dins cada longitud i un HasMap
     * per la complexitat dels seus mètodes*/
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             while ((word = reader.read()) != null) {
                 if (word.getLength() <= MAX_LENGTH && word.getLength() >= MIN_LENGTH) {
                     lengths.get(word.getLength()).add(word);
+                    wordsAmmount[word.getLength() - MIN_LENGTH]++;
                 }
             }
             reader.close();
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void restartGame(View v) {
+        nValids = 0;
         i.deleteViews();
         startGame();
     }
@@ -155,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         Random random = new Random();
         Iterator<Word> it = lengths.get(wordLength).iterator();
         Word chosen = null;
-        for (int i = 0; i < random.nextInt(lengths.get(wordLength).size()); i++) {
+        for (int i = 0; i < random.nextInt(wordsAmmount[wordLength - MIN_LENGTH]); i++) {
             chosen = it.next();
         }
         leters = new TreeSet<>();
@@ -178,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isSolutionWord(chosen.getSimple(), word.getSimple())) {
                     solutions.get(length).add(word);
                     valids.add(word);
+                    nValids++;
                 }
             }
             length++;
@@ -200,6 +205,11 @@ public class MainActivity extends AppCompatActivity {
             hidden.put(key, pos--);
         }
 
+        // If nValids is not enough pick words again
+        if (nValids < MAX_WORDS) {
+            nValids = 0;
+            selectWords();
+        }
     }
 
     private class Interface {
@@ -266,6 +276,10 @@ public class MainActivity extends AppCompatActivity {
                     letterButtons[i].setVisibility(View.INVISIBLE);
                 }
             }
+
+            // Show amount of possible words
+            TextView possibleWords = findViewById(R.id.possibleWords);
+            possibleWords.setText("Has encertat 0 de " + nValids);
         }
 
         private void calculateSizes() {
