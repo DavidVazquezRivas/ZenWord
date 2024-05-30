@@ -151,6 +151,11 @@ public class MainActivity extends AppCompatActivity {
         startGame();
     }
 
+    public void clear(View v) {
+        TextView wordView = findViewById(R.id.currentWord);
+        wordView.setText("");
+    }
+
     private void startGame() {
         Random random = new Random();
         wordLength = random.nextInt(3) + 5;
