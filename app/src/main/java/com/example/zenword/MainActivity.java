@@ -10,6 +10,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -23,7 +26,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<Integer, HashSet<Word>> lengths;
     private final int[] wordsAmmount = new int[MAX_LENGTH - MIN_LENGTH + 1];
     /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada*/
-    private TreeSet<Word> valids;
+    private TreeMap<String, String> valids;
     private int nValids = 0;
 
     /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada a dins cada longitud i un HasMap
@@ -52,8 +57,13 @@ public class MainActivity extends AppCompatActivity {
     /* S'empra un HashMap perquè amb la paraula s'ha de poder accedir a la posició d'aquest és més
     * no cal fer una recuperació ordenada i aquesta implementació té millors complexitats */
     private HashMap<String, Integer> hidden;
-    /* S'empra un TreeSet perquè s'han de recuperar les paraules ordenades */
-    private TreeSet<Word> found;
+    /* S'empra un TreeMap perquè s'han de recuperar les paraules ordenades, el valor es si s'ha repetit
+    * o no la paraula */
+    private TreeMap<String, Boolean> found;
+    private int nFound;
+
+    private int ajudes;
+    private int bonus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,19 +107,64 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void send(View v) {
+        // Save introduced word and reset
+        TextView wordView = findViewById(R.id.currentWord);
+        String input = wordView.getText().toString();
+        wordView.setText("");
+
+        if (hidden.containsKey(input)) { // Hidden should be a subset of valids
+            i.showWord(input, hidden.get(input));
+            found.put(valids.get(input), false);
+            nFound++;
+            hidden.remove(input);
+
+            i.updateFound();
+            i.showMessage("Has encertat una paraula", true);
+        } else if (valids.containsKey(input)) {
+            if (found.containsKey(valids.get(input))) {
+                found.put(valids.get(input), true);
+
+                i.updateFound();
+                i.showMessage("Aquesta ja la tens", true);
+            } else {
+                found.put(valids.get(input), false);
+                nFound++;
+                i.updateFound();
+                i.showMessage("Paraula valida! Tens un bonus", true);
+                bonus++;
+                if (bonus == 5) {
+                    bonus = 0;
+                    ajudes++;
+                }
+            }
+        } else {
+            i.showMessage("Paraula no vàlida", true);
+        }
+
+        if (hidden.isEmpty()) {
+            i.showMessage("Enhorabona, has guanyat", true);
+            disableViews(R.id.layout);
+        }
+    }
+
     public void restartGame(View v) {
-        nValids = 0;
         i.deleteViews();
-        TextView word = findViewById(R.id.currentWord);
-        word.setText("");
         startGame();
     }
 
     private void startGame() {
         Random random = new Random();
         wordLength = random.nextInt(3) + 5;
+        nValids = 0;
+        nFound = 0;
+        bonus = 0;
+        ajudes = 0;
+        TextView word = findViewById(R.id.currentWord);
+        word.setText("");
         selectWords();
         i = new Interface(getApplicationContext());
+        found = new TreeMap<>();
     }
 
     /**
@@ -180,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Find solutions
         solutions = new HashMap<>();
-        valids = new TreeSet<>();
+        valids = new TreeMap<>();
         for (int i = MIN_LENGTH; i <= MAX_LENGTH; i++) {
             solutions.put(i, new TreeSet<>());
         }
@@ -192,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                 Word word = it.next();
                 if (isSolutionWord(chosen.getSimple(), word.getSimple())) {
                     solutions.get(length).add(word);
-                    valids.add(word);
+                    valids.put(word.getSimple(), word.getFull());
                     nValids++;
                 }
             }
@@ -418,6 +473,33 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+        }
+
+        public void updateFound() {
+            TextView possibleWords = findViewById(R.id.possibleWords);
+            SpannableStringBuilder foundString = new SpannableStringBuilder();
+
+            for (Map.Entry<String, Boolean> entry : found.entrySet()) {
+                String word = entry.getKey();
+
+                foundString.append(word);
+
+                if (entry.getValue()) {
+                    int start = foundString.length() - word.length();
+                    int end = foundString.length();
+                    foundString.setSpan(new ForegroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+
+                foundString.append(", ");
+            }
+
+            if (foundString.length() > 2) {
+                foundString.delete(foundString.length() - 2, foundString.length());
+            }
+
+            // Establecer el texto en el TextView
+            possibleWords.setText("Has encertat " + nFound + " de " + nValids + ": ");
+            possibleWords.append(foundString);
         }
     }
 }
