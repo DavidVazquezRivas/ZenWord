@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import java.util.TreeSet;
 public class MainActivity extends AppCompatActivity {
 
     private Interface i;
+    private static final int MAX_WORDS = 5;
     private final int MIN_LENGTH = 3;
     private final int MAX_LENGTH = 7;
     private int wordLength;
@@ -42,6 +42,15 @@ public class MainActivity extends AppCompatActivity {
     /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada a dins cada longitud i un HasMap
     * per la complexitat dels seus mètodes*/
     private HashMap<Integer, TreeSet<Word>> solutions;
+    /* S'empra un Treeset perquè es recuperaran les lletres ordenades, d'aquesta forma no es donaran
+    * pistes sobre quina es la paraula triada, es pot sacrificar el O(1) de un HashSet per u O(logn)
+    * perquè no tendrem moltes lletres */
+    private TreeSet<Character> leters;
+    /* S'empra un HashMap perquè amb la paraula s'ha de poder accedir a la posició d'aquest és més
+    * no cal fer una recuperació ordenada i aquesta implementació té millors complexitats */
+    private HashMap<String, Integer> hidden;
+    /* S'empra un TreeSet perquè s'han de recuperar les paraules ordenades */
+    private TreeSet<Word> found;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +157,10 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < random.nextInt(lengths.get(wordLength).size()); i++) {
             chosen = it.next();
         }
-        Log.d("Chosen", chosen.getFull());
+        leters = new TreeSet<>();
+        for (char c : chosen.getSimple().toCharArray()) {
+            leters.add(c);
+        }
 
         // Find solutions
         solutions = new HashMap<>();
@@ -165,19 +177,32 @@ public class MainActivity extends AppCompatActivity {
                 if (isSolutionWord(chosen.getSimple(), word.getSimple())) {
                     solutions.get(length).add(word);
                     valids.add(word);
-                    Log.d("Valid", word.getFull());
                 }
             }
             length++;
         }
 
+        // Pick hidden words
+        int pos = MAX_WORDS - 1;
+        hidden = new HashMap<>();
 
+        for (int i = wordLength; i >= MIN_LENGTH; i--) {
+            if (!solutions.get(i).isEmpty()) {
+                String key = solutions.get(i).last().getSimple();
+                hidden.put(key, pos--);
+            }
+        }
+
+        Iterator<Word> ite = solutions.get(MIN_LENGTH).iterator();
+        while (pos >= 0 && ite.hasNext()) {
+            String key = ite.next().getSimple();
+            hidden.put(key, pos--);
+        }
 
     }
 
     private class Interface {
 
-        private static final int MAX_WORDS = 5;
         private final int X_GAP = 10;
         private final int Y_GAP = 20;
         private final TextView[][] textViews;
