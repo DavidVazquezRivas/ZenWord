@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
     private void startGame() {
         Random random = new Random();
         wordLength = random.nextInt(3) + 5;
-        i = new Interface(getApplicationContext());
         selectWords();
+        i = new Interface(getApplicationContext());
     }
 
     /**
@@ -241,6 +242,29 @@ public class MainActivity extends AppCompatActivity {
                 int prevId = i == 0 ? R.id.lettersTopGuide : textViews[i - 1][0].getId();
                 textViews[i] = createTextViewsRow(prevId, letters);
                 if (wordLength - letters == MAX_WORDS - (i + 1)) letters++;
+            }
+
+            // Show button letters
+            Button[] letterButtons = new Button[MAX_LENGTH];
+            Iterator<Character> it = leters.iterator();
+            for (int i = 0; i < letterButtons.length; i++) {
+                String buttonID = "letterButton" + (i + 1);
+                int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
+                letterButtons[i] = findViewById(resID);
+
+                if (i < wordLength) {
+                    if (it.hasNext()) {
+                        char letter = it.next();
+                        letterButtons[i].setText(String.valueOf(letter).toUpperCase());
+                    } else {
+                        letterButtons[i].setText("");
+                    }
+                    letterButtons[i].setEnabled(true);
+                    letterButtons[i].setVisibility(View.VISIBLE);
+                } else {
+                    letterButtons[i].setEnabled(false);
+                    letterButtons[i].setVisibility(View.INVISIBLE);
+                }
             }
         }
 

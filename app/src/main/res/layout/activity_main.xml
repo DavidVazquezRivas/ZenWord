@@ -131,7 +131,7 @@
         android:textColor="#FFFFFF"
         android:textSize="34sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/letterCircle"
         app:layout_constraintStart_toStartOf="@+id/letterCircle" />
 
     <Button
