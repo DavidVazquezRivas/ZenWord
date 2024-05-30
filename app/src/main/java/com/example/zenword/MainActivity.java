@@ -24,9 +24,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -51,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
     /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada a dins cada longitud i un HasMap
     * per la complexitat dels seus mètodes*/
     private HashMap<Integer, TreeSet<Word>> solutions;
-    /* S'empra un TreeMap perquè es recuperaran les lletres ordenades, d'aquesta forma no es donaran
-    * pistes sobre quina es la paraula triada, es pot sacrificar el O(1) de un HashSet per u O(logn)
-    * perquè no tendrem moltes lletres. Ha de ser map y no set perquè pot haver lletres repetides*/
-    private TreeMap<Character, Integer> leters;
+    /* S'empra un HashMap perquè no cal recuperar les lletres ordenades així tenim les avantatges de
+    * la complexitat d'un hash perquè no tendrem moltes lletres. Ha de ser map y no set perquè pot
+    * haver lletres repetides*/
+    private HashMap<Character, Integer> leters;
     /* S'empra un HashMap perquè amb la paraula s'ha de poder accedir a la posició d'aquest és més
     * no cal fer una recuperació ordenada i aquesta implementació té millors complexitats */
     private HashMap<String, Integer> hidden;
@@ -137,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
         if (hidden.isEmpty()) {
             i.showMessage("Enhorabona, has guanyat", true);
             disableViews(R.id.layout);
+        } else {
+            enableViews(R.id.layout);
         }
     }
 
@@ -166,6 +171,10 @@ public class MainActivity extends AppCompatActivity {
         i.updateFound();
     }
 
+    public void random(View v) {
+        i.reorganize();
+    }
+
     private void startGame() {
         Random random = new Random();
         wordLength = random.nextInt(3) + 5;
@@ -180,12 +189,6 @@ public class MainActivity extends AppCompatActivity {
         enableViews(R.id.layout);
     }
 
-    /**
-     *
-     * @param word1 chosen word
-     * @param word2 word to check if it's solution
-     * @return true if word2 can be formed with word1 letters, false otherwise
-     */
     private boolean isSolutionWord(String word1, String word2) {
         /* No és un catàleg rellevant per guardar informació */
         HashMap<Character, Integer> catalogue = new HashMap<>();
@@ -241,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < random.nextInt(wordsAmmount[wordLength - MIN_LENGTH]); i++) {
             chosen = it.next();
         }
-        leters = new TreeMap<>();
+        leters = new HashMap<>();
         for (char c : chosen.getSimple().toCharArray()) {
             if (leters.containsKey(c)) {
                 leters.put(c, leters.get(c) + 1);
@@ -307,6 +310,8 @@ public class MainActivity extends AppCompatActivity {
         private int usableWidth;
         private int letterSize;
 
+        private Button[] letterButtons;
+
         public Interface(Context context) {
             this.context = context;
 
@@ -340,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // Show button letters
-            Button[] letterButtons = new Button[MAX_LENGTH];
+            letterButtons = new Button[MAX_LENGTH];
             Iterator<Map.Entry<Character, Integer>> it = leters.entrySet().iterator();
 
             for (int i = 0; i < letterButtons.length; i++) {
@@ -539,6 +544,27 @@ public class MainActivity extends AppCompatActivity {
             // Update bonus button
             Button bonusButton = findViewById(R.id.bonusButton);
             bonusButton.setText(String.valueOf(bonus));
+        }
+
+        public void reorganize() {
+            List<String> letters = new ArrayList<>();
+
+            // Recopila las letras visibles en una lista
+            for (int i = 0; i < wordLength; i++) {
+                letters.add(letterButtons[i].getText().toString());
+            }
+
+            // Embaraja la lista usando el algoritmo de Fisher-Yates
+            Random random = new Random();
+            for (int i = letters.size() - 1; i > 0; i--) {
+                int j = random.nextInt(i + 1);
+                Collections.swap(letters, i, j);
+            }
+
+            // Asigna las letras embarajadas de vuelta a los botones
+            for (int i = 0; i < wordLength; i++) {
+                letterButtons[i].setText(letters.get(i));
+            }
         }
     }
 }
