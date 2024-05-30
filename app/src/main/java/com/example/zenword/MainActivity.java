@@ -88,9 +88,20 @@ public class MainActivity extends AppCompatActivity {
         i.showMessage("Hello message", true);
     }
 
+    public void pressLetter(View v) {
+        TextView word = findViewById(R.id.currentWord);
+
+        Button button = (Button) v;
+        if (word.getText().length() < wordLength) {
+            word.setText(word.getText().toString() + button.getText().toString());
+        }
+    }
+
     public void restartGame(View v) {
         nValids = 0;
         i.deleteViews();
+        TextView word = findViewById(R.id.currentWord);
+        word.setText("");
         startGame();
     }
 
