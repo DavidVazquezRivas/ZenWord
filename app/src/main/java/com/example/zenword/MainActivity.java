@@ -104,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
         Button button = (Button) v;
         if (word.getText().length() < wordLength) {
             word.setText(word.getText().toString() + button.getText().toString());
+            Button btn = (Button) v;
+            btn.setTextColor(Color.GRAY);
+            btn.setEnabled(false);
         }
     }
 
@@ -163,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
     public void clear(View v) {
         TextView wordView = findViewById(R.id.currentWord);
         wordView.setText("");
+        enableViews(R.id.layout);
     }
 
     public void bonus(View v) {
@@ -228,6 +232,10 @@ public class MainActivity extends AppCompatActivity {
             View child = parentView.getChildAt(i);
             if (child.getId() != R.id.bonusButton && child.getId() != R.id.clearButton) {
                 child.setEnabled(true);
+                if (child instanceof Button) {
+                    Button btn = (Button) child;
+                    if (btn.getCurrentTextColor() == Color.GRAY) btn.setTextColor(Color.WHITE);
+                }
             }
         }
     }
