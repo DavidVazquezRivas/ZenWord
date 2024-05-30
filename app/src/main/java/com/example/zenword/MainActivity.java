@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -130,8 +131,16 @@ public class MainActivity extends AppCompatActivity {
                 found.put(valids.get(input), false);
                 nFound++;
                 bonus++;
-                i.updateFound();
                 i.showMessage("Paraula valida! Tens un bonus", false);
+                if (bonus % 5 == 0) {
+                    Iterator<Map.Entry<String, Integer>> it = hidden.entrySet().iterator();
+
+                    Map.Entry<String, Integer> entry = it.next();
+                    String s = entry.getKey();
+                    Integer pos = entry.getValue();
+                    i.showFirstLetter(s, pos);
+                }
+                i.updateFound();
             }
         } else {
             i.showMessage("Paraula no vàlida", true);
@@ -156,19 +165,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void bonus(View v) {
-        if (bonus < 5) {
-            i.showMessage("No tens bonus suficients", false);
-        } else {
-            bonus -= 5;
-            Iterator<Map.Entry<String, Integer>> it = hidden.entrySet().iterator();
+        String title = "Encertades";
+        TextView tv = findViewById(R.id.possibleWords);
+        String message = tv.getText().toString();
 
-            Map.Entry<String, Integer> entry = it.next();
-            String s = entry.getKey();
-            Integer pos = entry.getValue();
-            i.showFirstLetter(s, pos);
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        i.updateFound();
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void random(View v) {
@@ -309,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
         private final int bgColor;
         private int usableWidth;
         private int letterSize;
-
         private Button[] letterButtons;
 
         public Interface(Context context) {
@@ -565,6 +571,10 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < wordLength; i++) {
                 letterButtons[i].setText(letters.get(i));
             }
+        }
+
+        public void showDialog(String title, String message) {
+
         }
     }
 }
