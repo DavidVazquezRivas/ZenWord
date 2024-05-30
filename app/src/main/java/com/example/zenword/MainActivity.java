@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +19,55 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.TreeSet;
 
 public class MainActivity extends AppCompatActivity {
 
     private Interface i;
+    private final int MIN_LENGTH = 3;
+    private final int MAX_LENGTH = 7;
+    private int wordLength;
+
+    /* S'empren un hashmap i un hashset perquè no hi ha necessitat de fer una recuperació ordenada
+    * que es el gran problema d'aquests i les complexitats algoritmitques d'aquest son els més òptims*/
+    private HashMap<Integer, HashSet<Word>> lengths;
+    /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada*/
+    private TreeSet<Word> valids;
+
+    /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada a dins cada longitud i un HasMap
+    * per la complexitat dels seus mètodes*/
+    private HashMap<Integer, TreeSet<Word>> solutions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*
+        Podem estalviar llegir del fitxer per a cada partida a canvi de tenir el catàleg de longituds
+        que ocupa molt d'espai
+         */
+        lengths = new HashMap<>();
+        for (int i = MIN_LENGTH; i <= MAX_LENGTH; i++) {
+            lengths.put(i, new HashSet<>());
+        }
+        try {
+            WordReader reader = new WordReader(getResources().openRawResource(R.raw.paraules));
+            Word word;
+            while ((word = reader.read()) != null) {
+                if (word.getLength() <= MAX_LENGTH && word.getLength() >= MIN_LENGTH) {
+                    lengths.get(word.getLength()).add(word);
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Tests
         startGame();
@@ -43,11 +82,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void startGame() {
         Random random = new Random();
-        i = new Interface(getApplicationContext(), random.nextInt(3) + 5);
+        wordLength = random.nextInt(3) + 5;
+        i = new Interface(getApplicationContext());
+        selectWords();
     }
 
+    /**
+     *
+     * @param word1 chosen word
+     * @param word2 word to check if it's solution
+     * @return true if word2 can be formed with word1 letters, false otherwise
+     */
     private boolean isSolutionWord(String word1, String word2) {
-        // TODO use our own map
+        /* No és un catàleg rellevant per guardar informació */
         HashMap<Character, Integer> catalogue = new HashMap<>();
 
         for (char c : word1.toCharArray()) {
@@ -93,21 +140,54 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void selectWords() {
+        // Choose word
+        Random random = new Random();
+        Iterator<Word> it = lengths.get(wordLength).iterator();
+        Word chosen = null;
+        for (int i = 0; i < random.nextInt(lengths.get(wordLength).size()); i++) {
+            chosen = it.next();
+        }
+        Log.d("Chosen", chosen.getFull());
+
+        // Find solutions
+        solutions = new HashMap<>();
+        valids = new TreeSet<>();
+        for (int i = MIN_LENGTH; i <= MAX_LENGTH; i++) {
+            solutions.put(i, new TreeSet<>());
+        }
+
+        int length = MIN_LENGTH;
+        for (HashMap.Entry<Integer, HashSet<Word>> entry : lengths.entrySet()) {
+            it = entry.getValue().iterator();
+            while(it.hasNext()) {
+                Word word = it.next();
+                if (isSolutionWord(chosen.getSimple(), word.getSimple())) {
+                    solutions.get(length).add(word);
+                    valids.add(word);
+                    Log.d("Valid", word.getFull());
+                }
+            }
+            length++;
+        }
+
+
+
+    }
+
     private class Interface {
 
         private static final int MAX_WORDS = 5;
         private final int X_GAP = 10;
         private final int Y_GAP = 20;
-        private final int wordLength;
         private final TextView[][] textViews;
         private final Context context;
         private final int bgColor;
         private int usableWidth;
         private int letterSize;
 
-        public Interface(Context context, int wordLength) {
+        public Interface(Context context) {
             this.context = context;
-            this.wordLength = wordLength;
 
             textViews = new TextView[MAX_WORDS][];
 
