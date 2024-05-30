@@ -14,6 +14,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
     /* S'empra un TreeSet perque s'ha de recuperar de forma ordenada a dins cada longitud i un HasMap
     * per la complexitat dels seus mètodes*/
     private HashMap<Integer, TreeSet<Word>> solutions;
-    /* S'empra un Treeset perquè es recuperaran les lletres ordenades, d'aquesta forma no es donaran
+    /* S'empra un TreeMap perquè es recuperaran les lletres ordenades, d'aquesta forma no es donaran
     * pistes sobre quina es la paraula triada, es pot sacrificar el O(1) de un HashSet per u O(logn)
-    * perquè no tendrem moltes lletres */
-    private TreeSet<Character> leters;
+    * perquè no tendrem moltes lletres. Ha de ser map y no set perquè pot haver lletres repetides*/
+    private TreeMap<Character, Integer> leters;
     /* S'empra un HashMap perquè amb la paraula s'ha de poder accedir a la posició d'aquest és més
     * no cal fer una recuperació ordenada i aquesta implementació té millors complexitats */
     private HashMap<String, Integer> hidden;
@@ -92,10 +93,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // Tests
         startGame();
-        i.showWord("wrd", 0);
-        i.showMessage("Hello message", true);
     }
 
     public void pressLetter(View v) {
@@ -110,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     public void send(View v) {
         // Save introduced word and reset
         TextView wordView = findViewById(R.id.currentWord);
-        String input = wordView.getText().toString();
+        String input = wordView.getText().toString().toLowerCase();
         wordView.setText("");
 
         if (hidden.containsKey(input)) { // Hidden should be a subset of valids
@@ -120,18 +118,18 @@ public class MainActivity extends AppCompatActivity {
             hidden.remove(input);
 
             i.updateFound();
-            i.showMessage("Has encertat una paraula", true);
+            i.showMessage("Has encertat una paraula", false);
         } else if (valids.containsKey(input)) {
             if (found.containsKey(valids.get(input))) {
                 found.put(valids.get(input), true);
 
                 i.updateFound();
-                i.showMessage("Aquesta ja la tens", true);
+                i.showMessage("Aquesta ja la tens", false);
             } else {
                 found.put(valids.get(input), false);
                 nFound++;
                 i.updateFound();
-                i.showMessage("Paraula valida! Tens un bonus", true);
+                i.showMessage("Paraula valida! Tens un bonus", false);
                 bonus++;
                 if (bonus == 5) {
                     bonus = 0;
@@ -165,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         selectWords();
         i = new Interface(getApplicationContext());
         found = new TreeMap<>();
+        enableViews(R.id.layout);
     }
 
     /**
@@ -228,9 +227,13 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < random.nextInt(wordsAmmount[wordLength - MIN_LENGTH]); i++) {
             chosen = it.next();
         }
-        leters = new TreeSet<>();
+        leters = new TreeMap<>();
         for (char c : chosen.getSimple().toCharArray()) {
-            leters.add(c);
+            if (leters.containsKey(c)) {
+                leters.put(c, leters.get(c) + 1);
+            } else {
+                leters.put(c, 1);
+            }
         }
 
         // Find solutions
@@ -248,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isSolutionWord(chosen.getSimple(), word.getSimple())) {
                     solutions.get(length).add(word);
                     valids.put(word.getSimple(), word.getFull());
+                    Log.d("valid key", word.getSimple());
                     nValids++;
                 }
             }
@@ -262,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
             if (!solutions.get(i).isEmpty()) {
                 String key = solutions.get(i).last().getSimple();
                 hidden.put(key, pos--);
+                Log.d("hidden key", key);
             }
         }
 
@@ -322,7 +327,8 @@ public class MainActivity extends AppCompatActivity {
 
             // Show button letters
             Button[] letterButtons = new Button[MAX_LENGTH];
-            Iterator<Character> it = leters.iterator();
+            Iterator<Map.Entry<Character, Integer>> it = leters.entrySet().iterator();
+
             for (int i = 0; i < letterButtons.length; i++) {
                 String buttonID = "letterButton" + (i + 1);
                 int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
@@ -330,8 +336,17 @@ public class MainActivity extends AppCompatActivity {
 
                 if (i < wordLength) {
                     if (it.hasNext()) {
-                        char letter = it.next();
+                        Map.Entry<Character, Integer> entry = it.next();
+                        char letter = entry.getKey();
+                        int frequency = entry.getValue();
+
                         letterButtons[i].setText(String.valueOf(letter).toUpperCase());
+
+                        if (frequency > 1) {
+                            leters.put(letter, frequency - 1);
+                        } else {
+                            it.remove();
+                        }
                     } else {
                         letterButtons[i].setText("");
                     }
